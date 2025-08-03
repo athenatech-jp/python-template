@@ -18,3 +18,17 @@ def add(a: int, b: int) -> int:
         The sum of the two numbers
     """
     return a + b
+
+
+def subtract(a: int, b: int) -> int:
+    """
+    Subtract two numbers
+
+    Args:
+        a: The first number
+        b: The second number
+
+    Returns:
+        The difference between the two numbers
+    """
+    return a - b
