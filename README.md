@@ -54,6 +54,8 @@ make setup-claude-api-key
 
 ※参考: [\[Claude Code\]任意のAPIを設定する](https://zenn.dev/aew2sbee/articles/claude-code-api-setting)
 
+練習用に編集してみる
+
 ## Pull Request で Claude によるコードレビューを実行する
 
 - Pull Request 内で @claude とメンションするとレビューが実行されます。
