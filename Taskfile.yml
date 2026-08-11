@@ -1,0 +1,46 @@
+version: "3"
+
+tasks:
+  init:
+    desc: 依存関係のインストールと pre-commit の設定
+    cmds:
+      - uv sync
+      - uv run pre-commit install
+
+  fmt:
+    desc: コードのフォーマットと lint (自動修正)
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check . --fix
+
+  ty:
+    desc: 型チェックを実行
+    cmds:
+      - uv run ty check
+
+  test:
+    desc: pytest を実行
+    cmds:
+      # NOTE: テストが 1 件も無い場合 pytest は exit code 5 を返すため、成功扱いにする
+      - uv run pytest || { ec=$?; if [ "$ec" -eq 5 ]; then echo "No tests collected."; else exit "$ec"; fi; }
+
+  pre-commit:
+    desc: 全ファイルに対して pre-commit hooks を実行
+    cmds:
+      - uv run pre-commit run --all-files
+
+  setup-claude-api-key:
+    desc: Claude API key を ~/.claude/settings.json に設定
+    interactive: true
+    cmds:
+      - |
+        bash -c '
+        set -e
+        mkdir -p ~/.claude
+        read -r -s -p "Enter Claude API key: " API_KEY; echo
+        if [ -f ~/.claude/settings.json ]; then
+          jq --arg key "$API_KEY" ".env.ANTHROPIC_API_KEY = \$key" ~/.claude/settings.json > ~/.claude/settings.json.tmp
+        else
+          echo "{}" | jq --arg key "$API_KEY" ".env.ANTHROPIC_API_KEY = \$key" > ~/.claude/settings.json.tmp
+        fi
+        mv ~/.claude/settings.json.tmp ~/.claude/settings.json
