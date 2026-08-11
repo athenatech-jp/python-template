@@ -28,19 +28,3 @@ tasks:
     desc: 全ファイルに対して pre-commit hooks を実行
     cmds:
       - uv run pre-commit run --all-files
-
-  setup-claude-api-key:
-    desc: Claude API key を ~/.claude/settings.json に設定
-    interactive: true
-    cmds:
-      - |
-        bash -c '
-        set -e
-        mkdir -p ~/.claude
-        read -r -s -p "Enter Claude API key: " API_KEY; echo
-        if [ -f ~/.claude/settings.json ]; then
-          jq --arg key "$API_KEY" ".env.ANTHROPIC_API_KEY = \$key" ~/.claude/settings.json > ~/.claude/settings.json.tmp
-        else
-          echo "{}" | jq --arg key "$API_KEY" ".env.ANTHROPIC_API_KEY = \$key" > ~/.claude/settings.json.tmp
-        fi
-        mv ~/.claude/settings.json.tmp ~/.claude/settings.json

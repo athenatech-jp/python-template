@@ -66,17 +66,6 @@ brew install go-task/tap/go-task
 task init
 ```
 
-4. Claude Code用に API Key を設定する
-
-- 以下のコマンドを実行すると `~/.claude/settings.json` に Claude API Key が設定されます。
-- **すでに設定されている場合は上書きされます。**
-
-```bash
-task setup-claude-api-key
-```
-
-※参考: [[Claude Code]任意のAPIを設定する](https://zenn.dev/aew2sbee/articles/claude-code-api-setting)
-
 ## タスク一覧
 
 ```bash
@@ -85,7 +74,6 @@ task fmt                   # コードのフォーマットと lint (自動修�
 task ty                    # 型チェック
 task test                  # pytest の実行
 task pre-commit            # 全ファイルに対して pre-commit hooks を実行
-task setup-claude-api-key  # Claude API key の設定
 ```
 
 ## Claude による GitHub 連携
