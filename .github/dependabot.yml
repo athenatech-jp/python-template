@@ -1,0 +1,7 @@
+# NOTE: hash pin した GitHub Actions の更新用。SHA とバージョンコメントの両方を自動更新した PR を作成する
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
