@@ -1,10 +1,18 @@
 [project]
 name = "template"
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
-    "pre-commit>=4.5.1",
-    "pytest>=9.0.2",
-    "ruff>=0.14.10",
-    "ty>=0.0.9",
+    "pytest>=9.1.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.1",
+    "ruff>=0.16.1",
+    "ty>=0.0.66",
+]
+
+[tool.uv]
+# NOTE: リリース直後のパッケージ起因の不具合やサプライチェーン攻撃を避けるため、直近 1 週間に公開されたバージョンを除外する
+exclude-newer = "1 week"

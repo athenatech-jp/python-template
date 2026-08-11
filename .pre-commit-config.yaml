@@ -37,7 +37,9 @@ repos:
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        types: [yaml, json]
+        types_or: [yaml, json]
+        # NOTE: prettier v4 はデフォルトでキャッシュが有効で、cwd に node_modules/.cache を生成してしまうため無効化する
+        args: ["--no-cache"]
 
   # shell scripts linter
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -62,7 +64,8 @@ repos:
     rev: v8.30.0
     hooks:
       - id: gitleaks
-        args: ["--staged"]  # 変更差分を走査
+        args: ["--staged"] # 変更差分を走査
+
 
   # word spelling linter
   # - repo: https://github.com/codespell-project/codespell

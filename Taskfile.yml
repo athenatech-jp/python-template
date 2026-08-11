@@ -1,0 +1,30 @@
+version: "3"
+
+tasks:
+  init:
+    desc: 依存関係のインストールと pre-commit の設定
+    cmds:
+      - uv sync
+      - uv run pre-commit install
+
+  fmt:
+    desc: コードのフォーマットと lint (自動修正)
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check . --fix
+
+  ty:
+    desc: 型チェックを実行
+    cmds:
+      - uv run ty check
+
+  test:
+    desc: pytest を実行
+    cmds:
+      # NOTE: テストが 1 件も無い場合 pytest は exit code 5 を返すため、成功扱いにする
+      - uv run pytest || { ec=$?; if [ "$ec" -eq 5 ]; then echo "No tests collected."; else exit "$ec"; fi; }
+
+  pre-commit:
+    desc: 全ファイルに対して pre-commit hooks を実行
+    cmds:
+      - uv run pre-commit run --all-files
