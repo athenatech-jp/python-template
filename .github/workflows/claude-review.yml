@@ -28,7 +28,7 @@ jobs:
 
       # NOTE: labeled イベントは track_progress 非対応のため（anthropics/claude-code-action#1095）、過去レビューの参照は prompt 内の gh コマンドで行う
       - name: Claude PR Review
-        uses: anthropics/claude-code-action@5ef2e550a465a721f4f45e4a7d3c340c873e1dcc # v1.0.190
+        uses: anthropics/claude-code-action@24dcd50c0568f0fc9e9211213a4fd2d9eb15c4e0 # v1.0.200
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
