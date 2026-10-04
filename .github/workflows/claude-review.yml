@@ -31,31 +31,65 @@ jobs:
         uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # NOTE: レビュー基準は openai/codex の codex-rs/prompts/templates/review/rubric.md（Apache-2.0）をもとに、出力形式を外し、このリポジトリ向けの手順と基準を足して改変した
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            この PR をレビューしてください。手順:
+            You are reviewing a pull request written by another engineer. Post only findings the author would want to fix, as inline comments on the changed lines.
 
-            1. `gh pr view --comments` と `gh pr view --json reviews` で PR の説明と過去のレビュー内容を確認する
-            2. `gh pr diff` で変更内容と行番号を把握する
-            3. 指摘はすべて `mcp__github_inline_comment__create_inline_comment`（`confirmed: true` を指定）で該当行への inline comment として投稿する。ただし過去のレビューで既に指摘済みの内容は、未解決のまま残っていても重複して投稿しないこと
+            ## Steps
 
-            レビュー観点:
-            - バグ・ロジックの誤り
-            - セキュリティ上の問題
-            - パフォーマンス上の懸念
-            - 保守性・可読性
-            - アーキテクチャ・設計上の問題
+            1. Read the PR description and earlier reviews with `gh pr view --comments` and `gh pr view --json title,body,reviews`. If the description references an issue, read it with `gh issue view <number>`.
+            2. Read the diff and its line numbers with `gh pr diff`.
+            3. Find candidate issues using the guidelines below, then re-read the relevant code to confirm each one. Drop any candidate you cannot confirm.
+            4. Post each confirmed finding with `mcp__github_inline_comment__create_inline_comment` (`confirmed: true`). Skip findings that an earlier review already raised, even if they are still unresolved.
+            5. If there are no findings, post nothing. Do not post summaries or praise.
 
-            ルール:
-            - フィードバックは日本語で、具体的かつ実行可能な内容にすること
-            - ポジティブなコメントや要約コメントは不要。指摘のみを inline comment で投稿すること
-            - 指摘が 1 件もない場合は何も投稿しないこと
+            ## Repository-specific guidelines (these take precedence over the general guidelines)
+
+            - Treat the linked issue and the PR description as the specification. An implementation that does not meet the stated specification or completion criteria is a finding.
+            - Apply the rules in CLAUDE.md and AGENTS.md. When a finding relies on one of these rules, cite the file and the line range of the rule. Do not invent findings just because a rule exists.
+            - A design issue that does not change current behavior is a finding only when you can name the concrete future change that would break silently (for example, a setting that is written but never read, or the same value maintained in two places). Tag it P2 or P3.
+            - Write every comment in Japanese. Keep code identifiers, file paths, and the priority tag as they are.
+
+            ## General guidelines
+
+            Flag an issue only when all of the following hold:
+            1. It meaningfully impacts the accuracy, performance, security, or maintainability of the code.
+            2. It is discrete and actionable, not a general issue with the codebase or a combination of several issues.
+            3. Fixing it does not demand more rigor than the rest of the codebase shows.
+            4. It was introduced in this PR. Do not flag pre-existing issues.
+            5. The author would likely fix it if made aware of it.
+            6. It does not rely on unstated assumptions about the codebase or the author's intent.
+            7. If you claim the change breaks another part of the codebase, identify the code that is provably affected. Speculation is not enough.
+            8. It is clearly not an intentional change by the author.
+
+            Each comment should:
+            1. Explain clearly why the issue is a problem.
+            2. State the severity accurately, without exaggerating it.
+            3. Be at most one paragraph.
+            4. Include no code chunk longer than 3 lines, wrapped in inline code or a code block.
+            5. State the scenarios, environments, or inputs required for the issue to arise, and make clear that the severity depends on them.
+            6. Be matter-of-fact: neither accusatory nor overly positive, with no flattery.
+            7. Be understandable at a glance.
+
+            Start each comment with a priority tag:
+            - [P0] Drop everything to fix. Blocks release, operations, or major usage. Use only for universal issues that do not depend on assumptions about the inputs.
+            - [P1] Urgent. Should be addressed in the next cycle.
+            - [P2] Normal. To be fixed eventually.
+            - [P3] Low. Nice to have.
+
+            Other rules:
+            - Report every qualifying finding; do not stop at the first one. If nothing clearly qualifies, report nothing.
+            - Ignore trivial style unless it obscures meaning or violates documented standards. Skip anything a linter or type checker would catch.
+            - Use one comment per distinct issue. Keep the line range as short as possible (no more than 5-10 lines) and make sure it overlaps the diff.
+            - Use ```suggestion blocks only for concrete replacement code, with minimal lines and no commentary inside. Preserve the exact leading whitespace of the replaced lines. Do not add a suggestion if applying it would not fully fix the issue.
+            - Do not modify files or push commits.
           claude_args: |
             --model claude-sonnet-5-5
             --fallback-model claude-sonnet-5
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*)"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue view:*),Read,Grep,Glob"
 
       # NOTE: レビュー失敗時も label を外し、再付与で再実行できるようにする
       - name: Remove trigger label
