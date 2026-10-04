@@ -28,7 +28,7 @@ jobs:
 
       # NOTE: labeled イベントは track_progress 非対応のため（anthropics/claude-code-action#1095）、過去レビューの参照は prompt 内の gh コマンドで行う
       - name: Claude PR Review
-        uses: anthropics/claude-code-action@a874e9ecd7bb36efdad65429c6b35815f5a08f10 # v1.0.210
+        uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
@@ -53,8 +53,8 @@ jobs:
             - ポジティブなコメントや要約コメントは不要。指摘のみを inline comment で投稿すること
             - 指摘が 1 件もない場合は何も投稿しないこと
           claude_args: |
-            --model claude-sonnet-5
-            --fallback-model claude-sonnet-4-6
+            --model claude-sonnet-5-5
+            --fallback-model claude-sonnet-5
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*)"
 
       # NOTE: レビュー失敗時も label を外し、再付与で再実行できるようにする
