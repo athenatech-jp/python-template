@@ -33,11 +33,11 @@ jobs:
 
       # NOTE: 質問回答専用のため、ファイル編集や git 操作は禁止する
       - name: Claude Q&A
-        uses: anthropics/claude-code-action@a874e9ecd7bb36efdad65429c6b35815f5a08f10 # v1.0.210
+        uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           trigger_phrase: "@claude"
           claude_args: |
-            --model claude-sonnet-5
-            --fallback-model claude-sonnet-4-6
+            --model claude-sonnet-5-5
+            --fallback-model claude-sonnet-5
             --disallowedTools "Edit,Write,MultiEdit,NotebookEdit,Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr create:*)"
